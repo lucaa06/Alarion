@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Odyssey: Esplora l'Universo in 3D</title>
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* Stili Base e Font */
+        body {
+            font-family: 'Share Tech Mono', monospace; /* Font tecnico per il corpo */
+            background-color: #000000; /* Sfondo nero puro per lo spazio */
+            color: #00ffcc; /* Testo ciano brillante per un look futuristico */
+            overflow-x: auto; /* Previene scroll orizzontale */
+            -webkit-font-smoothing: antialiased; /* Migliora il rendering del testo */
+            -moz-osx-font-smoothing: grayscale;
+        }
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif; /* Font futuristico per i titoli */
+            color: #00ffff; /* Ciano brillante */
+            text-shadow: 0 0 10px rgba(0,255,255,0.6); /* Bagliore sui titoli */
+        }
+
+        /* Stili specifici per il layout */
+.container {
+    max-width: 1400px; /* Contenitore più ampio per panorami spaziali */
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative; /* Aggiungi position relative */
+    z-index: 2; /* Assicurati che sia sopra il canvas */
+}
+
+/* Canvas 3D a tutto schermo per lo sfondo */
+#cosmic-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Mettilo dietro il contenuto */
+    background-color: #000000;
+}
+
+/* Navigazione */
+.main-header {
+    background-color: rgba(0, 0, 0, 0.7); /* Sfondo semi-trasparente */
+    backdrop-filter: blur(8px); /* Effetto sfocato per un look futuristico */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Alto z-index per la navbar */
+    border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+/* Sezione Hero */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative; /* Essenziale per z-index */
+    padding-top: 100px; /* Spazio per la navbar fissa */
+    z-index: 2; /* Assicurati che sia sopra il canvas */
+    overflow: hidden;
+}
+.hero-content {
+    /* ... il tuo stile esistente ... */
+    position: relative; /* Assicurati che il contenuto abbia un contesto di stacking */
+    z-index: 3; /* Un po' più alto se necessario per animazioni o sovrapposizioni interne */
+}
+
+
+/* Sezioni Contenuto */
+.content-section {
+    padding: 100px 0;
+    background-color: rgba(0,0,0,0.6); /* Sfondo scuro per il contenuto */
+    border-top: 1px solid rgba(0,255,255,0.1);
+    position: relative; /* Essenziale per z-index */
+    z-index: 2; /* Assicurati che sia sopra il canvas */
+    opacity: 0; /* Inizialmente nascosto per animazione allo scroll */
+    transform: translateY(50px);
+}
+
+/* Footer */
+.main-footer {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #00ffcc;
+    text-align: center;
+    padding: 40px 0;
+    border-top: 1px solid rgba(0, 255, 255, 0.3);
+    font-size: 0.9rem;
+    position: relative; /* Essenziale per z-index */
+    z-index: 2; /* Assicurati che sia sopra il canvas */
+}
+
+        /* Canvas 3D a tutto schermo per lo sfondo */
+        #cosmic-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* Mettilo dietro il contenuto */
+            background-color: #000000;
+        }
+
+        /* Navigazione */
+        .main-header {
+            background-color: rgba(0, 0, 0, 0.7); /* Sfondo semi-trasparente */
+            backdrop-filter: blur(8px); /* Effetto sfocato per un look futuristico */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+        }
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 8px rgba(0,255,255,0.5);
+        }
+        .nav-links {
+            display: flex;
+            gap: 3rem; /* Ampio spazio tra i link */
+        }
+        .nav-links a {
+            color: #00ffcc;
+            font-weight: 500;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
+            position: relative; /* Per underline animato */
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #00ffff;
+            left: 50%;
+            bottom: -5px;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .nav-links a:hover {
+            color: #00ffff;
+            text-shadow: 0 0 15px rgba(0,255,255,0.8);
+            transform: translateY(-3px);
+        }
+        /* Burger menu per mobile */
+        .burger-menu {
+            display: none; /* Nascosto di default */
+            cursor: pointer;
+            font-size: 2rem;
+            color: #00ffff;
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.9); padding: 20px 0; border-top: 1px solid rgba(0, 255, 255, 0.3); }
+            .nav-links.active { display: flex; }
+            .nav-links a { padding: 10px 20px; text-align: center; }
+            .burger-menu { display: block; }
+        }
+
+        /* Sezione Hero */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding-top: 100px; /* Spazio per la navbar fissa */
+            z-index: 1; /* Contenuto sopra il canvas 3D */
+            overflow: hidden; /* Per animazioni che entrano dall'esterno */
+        }
+        .hero-content {
+            max-width: 900px;
+            padding: 20px;
+            background-color: rgba(0,0,0,0.4); /* Sfondo semi-trasparente per leggibilità */
+            border-radius: 10px;
+            border: 1px solid rgba(0,255,255,0.2);
+            box-shadow: 0 0 20px rgba(0,255,255,0.2);
+            transform: translateY(50px); /* Partenza per animazione */
+            opacity: 0; /* Inizialmente nascosto */
+        }
+        .hero-section h1 {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            transform: translateY(50px); /* Partenza per animazione */
+            opacity: 0; /* Inizialmente nascosto */
+        }
+        .hero-section p {
+            font-size: 1.8rem;
+            margin-bottom: 3rem;
+            color: #ccffff;
+            transform: translateY(50px); /* Partenza per animazione */
+            opacity: 0; /* Inizialmente nascosto */
+        }
+        .btn-explore {
+            background-color: #00ffff;
+            color: #0a0a0a;
+            padding: 15px 40px;
+            border-radius: 50px; /* Bottone arrotondato */
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 15px rgba(0,255,255,0.4);
+            transform: translateY(50px); /* Partenza per animazione */
+            opacity: 0; /* Inizialmente nascosto */
+        }
+        .btn-explore:hover {
+            background-color: #00e6e6;
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px rgba(0,255,255,0.6), 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Sezioni Contenuto */
+        .content-section {
+            padding: 100px 0;
+            background-color: rgba(0,0,0,0.6); /* Sfondo scuro per il contenuto */
+            border-top: 1px solid rgba(0,255,255,0.1);
+            position: relative;
+            z-index: 1;
+            opacity: 0; /* Inizialmente nascosto per animazione allo scroll */
+            transform: translateY(50px);
+        }
+        .content-section h2 {
+            text-align: center;
+            font-size: 4.5rem;
+            margin-bottom: 80px;
+        }
+
+        /* Sezione Pianeti */
+        .planet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            margin-top: 50px;
+        }
+        .planet-card {
+            background-color: rgba(10, 20, 30, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,255,255,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+            border: 1px solid rgba(0,255,255,0.2);
+            opacity: 0; /* Inizialmente nascosto per animazione allo scroll */
+            transform: translateY(30px);
+        }
+        .planet-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 30px rgba(0,255,255,0.4);
+        }
+        .planet-3d-container {
+            width: 100%;
+            height: 300px; /* Altezza fissa per il canvas del modello 3D */
+            background-color: #000000;
+            position: relative;
+        }
+        .planet-3d-container canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .planet-info {
+            padding: 30px;
+        }
+        .planet-info h3 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #00ffff;
+        }
+        .planet-info p {
+            font-size: 1.1rem;
+            color: #ccffff;
+            line-height: 1.7;
+        }
+        .planet-stats {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            color: #00ffcc;
+        }
+        .planet-stats div {
+            flex-basis: 48%; /* Per due colonne */
+            margin-bottom: 10px;
+        }
+        .planet-stats strong {
+            display: block;
+            font-size: 1.2rem;
+            color: #00ffff;
+        }
+        .planet-stats span {
+            font-size: 0.9rem;
+            color: #99ffff;
+        }
+
+        /* Sezione Galassie */
+        .galaxy-card {
+            background-color: rgba(10, 20, 30, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,255,255,0.15);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(0,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Inizialmente nascosto per animazione allo scroll */
+            transform: translateX(-30px);
+        }
+        .galaxy-card:nth-child(even) {
+            flex-direction: row-reverse; /* Inverti ordine per le card pari */
+            transform: translateX(30px);
+        }
+        .galaxy-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 30px rgba(0,255,255,0.4);
+        }
+        .galaxy-card img {
+            width: 40%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.5s ease;
+        }
+        .galaxy-card:hover img {
+            transform: scale(1.05);
+        }
+        .galaxy-info {
+            padding: 30px;
+            width: 60%;
+        }
+        .galaxy-info h3 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            color: #00ffff;
+        }
+        .galaxy-info p {
+            font-size: 1.1rem;
+            color: #ccffff;
+            line-height: 1.8;
+        }
+
+        /* Sezione Fenomeni e Esplorazione */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        .feature-card {
+            background-color: rgba(10, 20, 30, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.15);
+            text-align: center;
+            border: 1px solid rgba(0,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Inizialmente nascosto per animazione allo scroll */
+            transform: translateY(30px);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0,255,255,0.4);
+        }
+        .feature-card .icon {
+            font-size: 4rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+        .feature-card h3 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            font-size: 1rem;
+            color: #ccffff;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #00ffcc;
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+        .social-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .social-links a {
+            color: #00ffcc;
+            font-size: 1.8rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .social-links a:hover {
+            color: #00ffff;
+            transform: translateY(-3px) scale(1.1);
+        }
+
+        /* Media Queries per responsività */
+        @media (max-width: 1024px) {
+            .hero-section h1 { font-size: 4rem; }
+            .hero-section p { font-size: 1.5rem; }
+            .content-section h2 { font-size: 3.5rem; }
+            .galaxy-card { flex-direction: column; }
+            .galaxy-card:nth-child(even) { flex-direction: column; } /* Assicura coerenza */
+            .galaxy-card img, .galaxy-info { width: 100%; }
+            .galaxy-card img { height: 250px; }
+            .galaxy-info { padding: 20px; text-align: center; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 { font-size: 3rem; }
+            .hero-section p { font-size: 1.2rem; }
+            .content-section h2 { font-size: 2.8rem; margin-bottom: 50px; }
+            .planet-grid { grid-template-columns: 1fr; }
+            .planet-3d-container { height: 250px; }
+            .planet-info h3 { font-size: 2rem; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .container { padding: 0 16px; }
+        }
+        @media (max-width: 480px) {
+            .hero-section h1 { font-size: 2.5rem; }
+            .hero-section p { font-size: 1rem; }
+            .btn-explore { padding: 12px 30px; font-size: 0.9rem; }
+            .content-section { padding: 60px 0; }
+            .content-section h2 { font-size: 2rem; }
+            .galaxy-info h3 { font-size: 2.2rem; }
+            .planet-info h3 { font-size: 1.8rem; }
+            .planet-info p, .galaxy-info p, .feature-card p { font-size: 0.9rem; }
+        }
+        .content-section,
+.planet-card,
+.galaxy-card,
+.feature-card,
+.hero-content,
+.hero-section h1,
+.hero-section p,
+.btn-explore {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+    </style>
+</head>
+<body>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'none';
+        entry.target.style.transition = 'all 1s ease';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.2 // Inizia l'animazione quando il 20% è visibile
+  });
+
+  const elementsToAnimate = document.querySelectorAll(
+    '.content-section, .planet-card, .galaxy-card, .feature-card, .hero-content, .hero-section h1, .hero-section p, .btn-explore'
+  );
+
+  elementsToAnimate.forEach(el => observer.observe(el));
+});
+</script>
+
+    <canvas id="cosmic-canvas"></canvas>
+
+    <header class="main-header">
+        <div class="container navbar">
+            <div class="logo">Cosmic Odyssey</div>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#pianeti">Pianeti</a></li>
+                    <li><a href="#galassie">Galassie</a></li>
+                    <li><a href="#fenomeni">Fenomeni</a></li>
+                    <li><a href="#esplorazione">Esplorazione</a></li>
+                    <li><a href="#contatti">Contatti</a></li>
+                </ul>
+            </nav>
+            <div class="burger-menu" id="burgerMenu">
+                <i data-lucide="menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1>Benvenuti nell'Infinito</h1>
+                <p>Intraprendi un viaggio epico attraverso le meraviglie dell'universo.</p>
+                <a href="#pianeti" class="btn-explore">Esplora il Cosmo</a>
+            </div>
+        </section>
+
+        <section id="pianeti" class="content-section">
+            <div class="container">
+                <h2>I Nostri Vicini Cosmici</h2>
+                <div class="planet-grid">
+                    <div class="planet-card">
+                        <div class="planet-3d-container">
+                            <canvas class="planet-model" data-planet="mercury"></canvas>
+                        </div>
+                        <div class="planet-info">
+                            <h3>Mercurio</h3>
+                            <p>Il più piccolo e più interno dei pianeti del Sistema Solare, noto per le sue estreme fluttuazioni di temperatura tra giorno e notte.</p>
+                            <div class="planet-stats">
+                                <div><strong>Distanza dal Sole:</strong> 57.9 milioni km</div>
+                                <div><strong>Durata Giorno:</strong> 58 giorni terrestri</div>
+                                <div><strong>Temperatura media:</strong> 167°C</div>
+                                <div><strong>Numero Lune:</strong> 0</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="planet-card">
+                        <div class="planet-3d-container">
+                            <canvas class="planet-model" data-planet="mars"></canvas>
+                        </div>
+                        <div class="planet-info">
+                            <h3>Marte</h3>
+                            <p>Il Pianeta Rosso, meta ambita per l'esplorazione umana e sede di antichi canali d'acqua che suggeriscono una storia ricca di potenziale vita.</p>
+                            <div class="planet-stats">
+                                <div><strong>Distanza dal Sole:</strong> 227.9 milioni km</div>
+                                <div><strong>Durata Giorno:</strong> 24.6 ore terrestri</div>
+                                <div><strong>Temperatura media:</strong> -63°C</div>
+                                <div><strong>Numero Lune:</strong> 2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="planet-card">
+                        <div class="planet-3d-container">
+                            <canvas class="planet-model" data-planet="jupiter"></canvas>
+                        </div>
+                        <div class="planet-info">
+                            <h3>Giove</h3>
+                            <p>Il gigante gassoso del nostro sistema, con la sua Grande Macchia Rossa, una tempesta che infuria da secoli, e un'impressionante collezione di lune.</p>
+                            <div class="planet-stats">
+                                <div><strong>Distanza dal Sole:</strong> 778.5 milioni km</div>
+                                <div><strong>Durata Giorno:</strong> 9.9 ore terrestri</div>
+                                <div><strong>Temperatura media:</strong> -145°C</div>
+                                <div><strong>Numero Lune:</strong> 79+</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="planet-card">
+                        <div class="planet-3d-container">
+                            <canvas class="planet-model" data-planet="saturn"></canvas>
+                        </div>
+                        <div class="planet-info">
+                            <h3>Saturno</h3>
+                            <p>Famoso per i suoi anelli mozzafiato, composti da miliardi di frammenti di ghiaccio e roccia. Un gigante gassoso di incredibile bellezza.</p>
+                            <div class="planet-stats">
+                                <div><strong>Distanza dal Sole:</strong> 1.4 miliardi km</div>
+                                <div><strong>Durata Giorno:</strong> 10.7 ore terrestri</div>
+                                <div><strong>Temperatura media:</strong> -178°C</div>
+                                <div><strong>Numero Lune:</strong> 82+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="galassie" class="content-section">
+            <div class="container">
+                <h2>Regni Stellari Lontani</h2>
+                <div class="galaxy-card">
+                    <img src="https://via.placeholder.com/600x350/0D1A2E/00ffff?text=Galassia+Andromeda" alt="Galassia di Andromeda">
+                    <div class="galaxy-info">
+                        <h3>Andromeda (M31)</h3>
+                        <p>La galassia spirale più vicina alla Via Lattea e la più grande nel nostro Gruppo Locale. È destinata a scontrarsi con la nostra galassia tra circa 4,5 miliardi di anni, formando una nuova galassia ellittica gigante.</p>
+                        <p>Un laboratorio naturale per studiare l'evoluzione delle galassie. È visibile a occhio nudo in condizioni di cielo scuro.</p>
+                    </div>
+                </div>
+                <div class="galaxy-card">
+                    <img src="https://via.placeholder.com/600x350/0D1A2E/00ffff?text=Via+Lattea" alt="Via Lattea">
+                    <div class="galaxy-info">
+                        <h3>Via Lattea</h3>
+                        <p>La nostra galassia ospita il nostro Sistema Solare, una magnifica galassia a spirale barrata con un diametro stimato tra 100.000 e 180.000 anni luce. Contiene tra 100 e 400 miliardi di stelle.</p>
+                        <p>Al suo centro risiede un buco nero supermassiccio, Sagittarius A*, intorno al quale ruotano tutte le stelle e le nubi di gas.</p>
+                    </div>
+                </div>
+                <div class="galaxy-card">
+                    <img src="https://via.placeholder.com/600x350/0D1A2E/00ffff?text=Galassia+Sigaro" alt="Galassia Sigaro">
+                    <div class="galaxy-info">
+                        <h3>Galassia Sigaro (M82)</h3>
+                        <p>Una galassia starburst situata a circa 12 milioni di anni luce dalla Terra. È famosa per la sua alta velocità di formazione stellare, probabilmente indotta dall'interazione gravitazionale con la vicina M81.</p>
+                        <p>Emette un forte bagliore a infrarossi e ha un'intensa attività di supernova. Offre una visione ravvicinata dei processi di formazione stellare violenti.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="fenomeni" class="content-section">
+            <div class="container">
+                <h2>Fenomeni Cosmici Mozzafiato</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="icon" data-lucide="sun"></span>
+                        <h3>Buchi Neri</h3>
+                        <p>Regioni dello spazio-tempo dove la gravità è così intensa che nulla, nemmeno la luce, può sfuggire. Sono i residui di stelle massicce o si trovano al centro delle galassie.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="icon" data-lucide="sparkles"></span>
+                        <h3>Nebulose</h3>
+                        <p>Nubi interstellari di polvere, idrogeno, elio e altri gas ionizzati. Sono spesso regioni di formazione stellare, creando paesaggi celesti di incredibile bellezza.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="icon" data-lucide="rocket"></span>
+                        <h3>Supernovae</h3>
+                        <p>Potenti esplosioni stellari, estremamente luminose, che segnano la fase finale della vita di alcune stelle. Sono responsabili della dispersione di elementi pesanti nell'universo.</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="icon" data-lucide="star"></span>
+                        <h3>Quasar</h3>
+                        <p>Nuclei galattici attivi estremamente luminosi, alimentati da buchi neri supermassicci che assorbono materia. Sono tra gli oggetti più luminosi e distanti dell'universo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="esplorazione" class="content-section">
+            <div class="container">
+                <h2>L'Avventura dell'Esplorazione Spaziale</h2>
+                <div class="galaxy-card" style="flex-direction: row;">
+                    <img src="https://via.placeholder.com/600x350/0D1A2E/00ffff?text=Rover+su+Marte" alt="Rover su Marte">
+                    <div class="galaxy-info">
+                        <h3>Missioni su Marte</h3>
+                        <p>Dalla Pathfinder a Perseverance, i rover su Marte hanno rivoluzionato la nostra comprensione del Pianeta Rosso, cercando segni di vita passata e preparando il terreno per future missioni umane.</p>
+                        <p>Ogni missione ci porta un passo più vicino a svelare i segreti di Marte e la sua potenziale abitabilità.</p>
+                    </div>
+                </div>
+                <div class="galaxy-card" style="flex-direction: row-reverse;">
+                    <img src="https://via.placeholder.com/600x350/0D1A2E/00ffff?text=Telescopio+Webb" alt="Telescopio Spaziale James Webb">
+                    <div class="galaxy-info">
+                        <h3>Telescopi Spaziali</h3>
+                        <p>Strumenti come Hubble e il James Webb Space Telescope ci permettono di guardare indietro nel tempo fino alle prime galassie, di osservare la formazione stellare e di studiare le atmosfere di esopianeti.</p>
+                        <p>Sono i nostri occhi sull'universo, rivelando immagini e dati di una bellezza e complessità inaudite.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contatti" class="content-section">
+            <div class="container">
+                <h2>Contattaci Dalla Terra</h2>
+                <p class="text-center text-lg mb-8">Hai domande sul cosmo o vuoi contribuire alla nostra missione?</p>
+                <div class="max-w-md mx-auto bg-gray-900 bg-opacity-70 p-8 rounded-lg border border-cyan-700 shadow-lg shadow-cyan-900/50">
+                    <form>
+                        <div class="mb-4">
+                            <label for="name" class="block text-cyan-400 text-sm font-bold mb-2">Nome:</label>
+                            <input type="text" id="name" name="name" class="shadow appearance-none border border-cyan-600 rounded w-full py-3 px-4 bg-gray-800 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="Il tuo nome">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-cyan-400 text-sm font-bold mb-2">Email:</label>
+                            <input type="email" id="email" name="email" class="shadow appearance-none border border-cyan-600 rounded w-full py-3 px-4 bg-gray-800 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="la_tua_email@dominio.com">
+                        </div>
+                        <div class="mb-6">
+                            <label for="message" class="block text-cyan-400 text-sm font-bold mb-2">Messaggio:</label>
+                            <textarea id="message" name="message" rows="5" class="shadow appearance-none border border-cyan-600 rounded w-full py-3 px-4 bg-gray-800 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-cyan-500" placeholder="Il tuo messaggio per l'equipaggio..."></textarea>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <button type="submit" class="btn-explore w-full">Invia Messaggio</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Cosmic Odyssey. Tutti i diritti riservati.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                <a href="#" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Inizializza Lucide Icons
+        lucide.createIcons();
+
+        // Burger Menu per Mobile
+        const burgerMenu = document.getElementById('burgerMenu');
+        const navLinks = document.getElementById('navLinks');
+
+        burgerMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Chiudi menu quando si clicca su un link (solo per mobile)
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // Three.js Global Scene for Background
+        let scene, camera, renderer, stars, nebulae, mainPlanet;
+        let mouseX = 0, mouseY = 0;
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        function initCosmicBackground() {
+            // Scena
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('cosmic-canvas'), antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            // Luce Ambientale per illuminare uniformemente la scena
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Colore e intensità
+            scene.add(ambientLight);
+
+            // Luce Direzionale per un effetto "sole"
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5).normalize();
+            scene.add(directionalLight);
+
+            // Stelle
+            const starGeometry = new THREE.BufferGeometry();
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, blending: THREE.AdditiveBlending, sizeAttenuation: true });
+            const starVertices = [];
+            for (let i = 0; i < 5000; i++) {
+                const x = (Math.random() - 0.5) * 200;
+                const y = (Math.random() - 0.5) * 200;
+                const z = (Math.random() - 0.5) * 200;
+                starVertices.push(x, y, z);
+            }
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
+            // Nebulose (usando un modello semplice o una texture su un piano)
+            // Per una vera nebulosa 3D, sarebbe necessario uno shader più complesso
+            const nebulaGeometry = new THREE.PlaneGeometry(100, 100);
+            const nebulaMaterial = new THREE.MeshBasicMaterial({
+                map: new THREE.TextureLoader().load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/sprites/snowflake1.png'), // Esempio di texture
+                transparent: true,
+                opacity: 0.2,
+                blending: THREE.AdditiveBlending,
+                side: THREE.DoubleSide
+            });
+            nebulae = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+            nebulae.position.set(0, 0, -50); // Mettila più indietro
+            scene.add(nebulae);
+
+            // Pianeta sullo sfondo (es. un lontano gigante gassoso)
+            const planetGeometry = new THREE.SphereGeometry(10, 32, 32);
+            const planetTexture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg'); // Texture di esempio
+            const planetMaterial = new THREE.MeshPhongMaterial({ map: planetTexture });
+            mainPlanet = new THREE.Mesh(planetGeometry, planetMaterial);
+            mainPlanet.position.set(30, -20, -100); // Posizionalo lontano
+            scene.add(mainPlanet);
+
+
+            document.addEventListener('mousemove', onDocumentMouseMove, false);
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - windowHalfX) / 100;
+            mouseY = (event.clientY - windowHalfY) / 100;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animateCosmicBackground() {
+            requestAnimationFrame(animateCosmicBackground);
+
+            // Anima le stelle (lenta rotazione e leggero movimento)
+            stars.rotation.x += 0.0001;
+            stars.rotation.y += 0.0002;
+
+            // Anima la nebulosa
+            nebulae.rotation.z += 0.0005;
+
+            // Anima il pianeta di sfondo
+            if (mainPlanet) {
+                mainPlanet.rotation.y += 0.0005;
+            }
+
+            // Parallasse della camera con il mouse
+            camera.position.x += (mouseX - camera.position.x) * .005;
+            camera.position.y += (-mouseY - camera.position.y) * .005;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        initCosmicBackground();
+        animateCosmicBackground();
+
+
+        // Three.js per i singoli modelli dei pianeti
+        const planetCanvases = document.querySelectorAll('.planet-model');
+        const planetScenes = {}; // Per tenere traccia di ogni scena, camera, renderer per ogni pianeta
+
+        const planetTextures = {
+            mercury: {
+                map: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/mercury_diffuse.jpg',
+                normalMap: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/mercury_normal.jpg'
+            },
+            mars: {
+                map: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/mars_1k_color.jpg',
+                normalMap: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/mars_1k_normal.jpg'
+            },
+            jupiter: {
+                map: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/jupiter_2k.jpg'
+            },
+            saturn: {
+                map: 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/saturn_2k.jpg'
+            }
+        };
+
+        planetCanvases.forEach(canvas => {
+            const planetName = canvas.dataset.planet;
+            const width = canvas.clientWidth;
+            const height = canvas.clientHeight;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); // alpha: true per sfondo trasparente
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5).normalize();
+            scene.add(directionalLight);
+
+            const geometry = new THREE.SphereGeometry(1.5, 32, 32);
+            const textureLoader = new THREE.TextureLoader();
+            const materialOptions = {};
+
+            if (planetTextures[planetName].map) {
+                materialOptions.map = textureLoader.load(planetTextures[planetName].map);
+            }
+            if (planetTextures[planetName].normalMap) {
+                materialOptions.normalMap = textureLoader.load(planetTextures[planetName].normalMap);
+            }
+
+            const material = new THREE.MeshPhongMaterial(materialOptions);
+            const planet = new THREE.Mesh(geometry, material);
+            scene.add(planet);
+
+            // Per Saturno, aggiungi gli anelli
+            if (planetName === 'saturn') {
+                const ringGeometry = new THREE.RingGeometry(2, 3.5, 64);
+                const ringTexture = textureLoader.load('https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/planets/saturn_rings.png');
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    map: ringTexture,
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const rings = new THREE.Mesh(ringGeometry, ringMaterial);
+                rings.rotation.x = Math.PI / 2; // Inclinare gli anelli
+                planet.add(rings); // Aggiungi gli anelli come figlio del pianeta
+            }
+
+            camera.position.z = 4;
+
+            planetScenes[planetName] = { scene, camera, renderer, planet };
+
+            function animatePlanet() {
+                requestAnimationFrame(animatePlanet);
+                planet.rotation.y += 0.005; // Rotazione lenta
+                renderer.render(scene, camera);
+            }
+            animatePlanet();
+
+            // Gestione del ridimensionamento per i canvas dei pianeti
+            const parentContainer = canvas.parentElement;
+            new ResizeObserver(() => {
+                const newWidth = parentContainer.clientWidth;
+                const newHeight = parentContainer.clientHeight;
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(newWidth, newHeight);
+            }).observe(parentContainer);
+
+            /*
+            // Se volessi caricare un modello GLTF/GLB più complesso:
+            const GLTFLoader = new THREE.GLTFLoader();
+            GLTFLoader.load('path/to/your/planet_model.gltf', (gltf) => {
+                const model = gltf.scene;
+                model.scale.set(0.1, 0.1, 0.1); // Adatta la scala
+                scene.add(model);
+                planetScenes[planetName].model = model; // Salva il riferimento al modello se necessario per animazioni
+            });
+            */
+        });
+
+
+        // GSAP Animations
+        GSAP.registerPlugin(ScrollTrigger);
+
+        // Hero section animations
+        GSAP.from(".hero-section h1", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 0.5 });
+        GSAP.from(".hero-section p", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 0.8 });
+        GSAP.from(".btn-explore", { opacity: 0, y: 50, duration: 1.2, ease: "power3.out", delay: 1.1 });
+
+        // General section animations
+        GSAP.utils.toArray(".content-section").forEach(section => {
+            GSAP.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%", // Quando la parte superiore della sezione è all'80% della viewport
+                    end: "bottom top",
+                    toggleActions: "play none none none", // Play on enter, nothing else
+                    // markers: true // Per debug, rimuovere in produzione
+                }
+            });
+        });
+
+        // Planet cards animations
+        GSAP.utils.toArray(".planet-card").forEach((card, i) => {
+            GSAP.from(card, {
+                opacity: 0,
+                y: 30,
+                duration: 0.8,
+                ease: "power2.out",
+                delay: i * 0.1, // Stagger effect
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                    toggleActions: "play none none none",
+                }
+            });
+        });
+
+        // Galaxy cards animations
+        GSAP.utils.toArray(".galaxy-card").forEach((card, i) => {
+            GSAP.from(card, {
+                opacity: 0,
+                x: i % 2 === 0 ? -50 : 50, // Scorrimento da sinistra o destra
+                duration: 1,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                    toggleActions: "play none none none",
+                }
+            });
+        });
+
+        // Feature cards animations
+        GSAP.utils.toArray(".feature-card").forEach((card, i) => {
+            GSAP.from(card, {
+                opacity: 0,
+                y: 30,
+                duration: 0.8,
+                ease: "power2.out",
+                delay: i * 0.1, // Stagger effect
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                    toggleActions: "play none none none",
+                }
+            });
+        });
+    </script>
+</body>
+</html>

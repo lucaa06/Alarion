@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Gallery: Il Riflesso dell'Anima - Esplora l'Arte Contemporanea</title>
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Stili Base e Font */
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #0d0d0d; /* Sfondo scuro per far risaltare l'arte */
+            color: #f0f0f0; /* Testo chiaro */
+            overflow-x: hidden; /* Previene scroll orizzontale non desiderato */
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            color: #ffffff;
+        }
+
+        /* Stili specifici per il layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Navigazione */
+        .main-header {
+            background-color: rgba(13, 13, 13, 0.9); /* Sfondo semi-trasparente */
+            backdrop-filter: blur(5px); /* Effetto sfocato per un look moderno */
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e6b300; /* Accento dorato */
+        }
+        .nav-links {
+            display: flex;
+            gap: 2.5rem; /* Aumenta lo spazio tra i link */
+        }
+        .nav-links a {
+            color: #f0f0f0;
+            font-weight: 500;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .nav-links a:hover {
+            color: #e6b300; /* Accento dorato al hover */
+            transform: translateY(-2px); /* Lieve animazione di sollevamento */
+        }
+        /* Burger menu per mobile (Tailwind o CSS custom) */
+        @media (max-width: 768px) {
+            .nav-links { display: none; } /* Nasconde i link principali */
+            .burger-menu { display: block; } /* Mostra l'icona del burger */
+            /* Qui andrebbero gli stili per il menu mobile che appare */
+        }
+
+        /* Sezione Hero */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('https://via.placeholder.com/1920x1080/000000/FFFFFF?text=Sfondo+Galleria') center center / cover no-repeat;
+            position: relative;
+            padding-top: 80px; /* Spazio per la navbar fissa */
+        }
+        .hero-content {
+            z-index: 1; /* Assicurati che il contenuto sia sopra le animazioni */
+            max-width: 800px;
+        }
+        .hero-section h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            /* Animazione del testo: es. Fade-in lettera per lettera con GSAP */
+        }
+        .hero-section p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            /* Animazione di apparizione */
+        }
+        .btn-explore {
+            background-color: #e6b300;
+            color: #1a1a1a;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-explore:hover {
+            background-color: #d1a000;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(230, 179, 0, 0.3);
+        }
+
+        /* Sezione Gallerie/Opere */
+        .gallery-section {
+            padding: 80px 0;
+            background-color: #1a1a1a;
+        }
+        .gallery-section h2 {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 60px;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+        .artwork-card {
+            background-color: #0d0d0d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .artwork-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease; /* Zoom all'hover */
+        }
+        .artwork-card:hover img {
+            transform: scale(1.05);
+        }
+        .artwork-info {
+            padding: 20px;
+            text-align: center;
+        }
+        .artwork-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .artwork-info p {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        /* Sezione Artisti */
+        .artists-section {
+            padding: 80px 0;
+            background-color: #0d0d0d;
+            text-align: center;
+        }
+        .artists-section h2 {
+            font-size: 3.5rem;
+            margin-bottom: 60px;
+        }
+        .artist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .artist-card {
+            background-color: #1a1a1a;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .artist-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .artist-card img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid #e6b300;
+        }
+        .artist-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .artist-card p {
+            font-size: 0.95rem;
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        /* Sezione Eventi */
+        .events-section {
+            padding: 80px 0;
+            background-color: #1a1a1a;
+        }
+        .events-section h2 {
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 60px;
+        }
+        .event-card {
+            background-color: #0d0d0d;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        .event-card img {
+            width: 30%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .event-info {
+            padding: 25px;
+            flex-grow: 1;
+        }
+        .event-info h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #e6b300;
+        }
+        .event-info p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #c0c0c0;
+        }
+        .event-date {
+            font-weight: 600;
+            color: #f0f0f0;
+            font-size: 1rem;
+        }
+        @media (max-width: 768px) {
+            .event-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .event-card img {
+                width: 100%;
+                height: 250px;
+            }
+        }
+
+        /* Sezione Contatti */
+        .contact-section {
+            padding: 80px 0;
+            background-color: #0d0d0d;
+            text-align: center;
+        }
+        .contact-section h2 {
+            font-size: 3.5rem;
+            margin-bottom: 60px;
+        }
+        .contact-form {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #1a1a1a;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .contact-form label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #f0f0f0;
+            font-weight: 500;
+        }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background-color: #0d0d0d;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #f0f0f0;
+            font-size: 1rem;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #e6b300;
+            box-shadow: 0 0 0 2px rgba(230, 179, 0, 0.3);
+        }
+        .contact-form button {
+            background-color: #e6b300;
+            color: #1a1a1a;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .contact-form button:hover {
+            background-color: #d1a000;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(230, 179, 0, 0.4);
+        }
+        .contact-info {
+            margin-top: 40px;
+            font-size: 1.1rem;
+            color: #c0c0c0;
+        }
+        .contact-info p {
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: #0a0a0a;
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid #222;
+        }
+        .footer-links a {
+            color: #b0b0b0;
+            margin: 0 15px;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: #e6b300;
+        }
+        .social-icons {
+            margin-top: 20px;
+        }
+        .social-icons a {
+            margin: 0 10px;
+            color: #f0f0f0;
+            font-size: 1.8rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+        .social-icons a:hover {
+            color: #e6b300;
+            transform: translateY(-3px);
+        }
+        .copyright {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="main-header">
+        <div class="container navbar">
+            <div class="logo">ArtInsight<span class="text-amber-500">.</span></div>
+            <nav class="nav-links">
+                <a href="#hero">Home</a>
+                <a href="#gallerie">Gallerie</a>
+                <a href="#artisti">Artisti</a>
+                <a href="#eventi">Eventi</a>
+                <a href="#visita">Visita</a>
+                <a href="#contatti">Contatti</a>
+            </nav>
+            <button class="burger-menu hidden" aria-label="Toggle Navigation">
+                <i data-lucide="menu" class="w-7 h-7 text-white"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <h1>Il Riflesso dell'Anima: Esplora l'Arte Contemporanea</h1>
+                <p>Immergiti in un viaggio attraverso la creatività e l'espressione umana in tutte le sue forme.</p>
+                <a href="#gallerie" class="btn-explore">Esplora le Opere <i data-lucide="arrow-right" class="inline-block ml-2 w-5 h-5"></i></a>
+            </div>
+            <canvas id="hero-3d-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;"></canvas>
+        </section>
+
+        <section id="about" class="py-20 bg-slate-950">
+            <div class="container text-center">
+                <h2 class="text-4xl mb-12">La Nostra Missione</h2>
+                <div class="max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed">
+                    <p class="mb-6">ArtInsight è un santuario digitale dedicato a celebrare la bellezza e la profondità dell'arte contemporanea. Crediamo che l'arte abbia il potere di trasformare, ispirare e connettere le persone al di là di ogni confine.</p>
+                    <p>Ci impegniamo a fornire una piattaforma dove artisti emergenti e affermati possano esporre le loro creazioni, e dove gli amanti dell'arte possano scoprire nuove prospettive e collezioni uniche.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallerie" class="gallery-section">
+            <div class="container">
+                <h2>Le Nostre Collezioni in Evidenza</h2>
+                <div class="gallery-grid">
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/3b82f6/FFFFFF?text=Opera+1" alt="Opera Astratta Luminosa">
+                        <div class="artwork-info">
+                            <h3>Armonia Cosmica</h3>
+                            <p>Di Elara Vance | Acrilico su tela</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/10b981/FFFFFF?text=Opera+2" alt="Paesaggio Onirico">
+                        <div class="artwork-info">
+                            <h3>Sussurri della Foresta</h3>
+                            <p>Di Kairos Bellwether | Olio su legno</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/ef4444/FFFFFF?text=Opera+3" alt="Ritratto Espressivo">
+                        <div class="artwork-info">
+                            <h3>Volto Interiore</h3>
+                            <p>Di Lyra Shadowbrook | Carboncino</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/9333ea/FFFFFF?text=Opera+4" alt="Opera Digitale Astratta">
+                        <div class="artwork-info">
+                            <h3>Flussi Digitali</h3>
+                            <p>Di Zephyrion Sparks | Arte digitale</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/06b6d4/FFFFFF?text=Opera+5" alt="Scultura Geometrica">
+                        <div class="artwork-info">
+                            <h3>Costellazione Frattale</h3>
+                            <p>Di Orion Stone | Scultura in metallo</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="artwork-card">
+                        <img src="https://via.placeholder.com/600x400/f59e0b/FFFFFF?text=Opera+6" alt="Installazione Luminosa">
+                        <div class="artwork-info">
+                            <h3>Eco Lirica</h3>
+                            <p>Di Selene Moon | Installazione luminosa</p>
+                            <button class="text-amber-500 hover:text-amber-400 mt-3 font-semibold transition-colors duration-200">
+                                Dettagli <i data-lucide="info" class="inline-block ml-1 w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-12">
+                    <a href="#" class="btn-explore">Vedi Tutte le Opere <i data-lucide="image" class="inline-block ml-2 w-5 h-5"></i></a>
+                </div>
+            </div>
+            <div id="artwork-modal" class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 hidden z-50">
+                <div class="bg-slate-900 rounded-lg p-8 max-w-4xl w-full relative">
+                    <button class="absolute top-4 right-4 text-white hover:text-gray-300" onclick="document.getElementById('artwork-modal').classList.add('hidden');">
+                        <i data-lucide="x" class="w-8 h-8"></i>
+                    </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <img src="https://via.placeholder.com/800x600/3b82f6/FFFFFF?text=Opera+Dettaglio" alt="Dettaglio Opera" class="w-full h-auto rounded-lg mb-4">
+                            <h3 class="text-3xl text-amber-500 mb-2">Titolo Opera Dettaglio</h3>
+                            <p class="text-gray-400 text-lg mb-4">Artista Nome Cognome | Tecnica | Anno</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-300 text-base leading-relaxed mb-6">
+                                Descrizione dettagliata dell'opera. Qui andrebbe un testo più lungo che racconta la storia, l'ispirazione e il significato dietro questa creazione.
+                                Potrebbe includere dettagli sui materiali utilizzati, il processo creativo e il contesto storico o emotivo in cui è stata realizzata.
+                                Questo testo sarà scorrevole e potrebbe avere effetti di parallasse o animazioni di testo.
+                            </p>
+                            <ul class="text-gray-400 text-sm space-y-2">
+                                <li><span class="font-semibold text-white">Dimensioni:</span> 120cm x 80cm</li>
+                                <li><span class="font-semibold text-white">Stato:</span> Disponibile per l'acquisto</li>
+                                <li><span class="font-semibold text-white">Prezzo:</span> Su richiesta</li>
+                            </ul>
+                            <button class="btn-explore mt-8 w-full">Richiedi Informazioni</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="artisti" class="artists-section">
+            <div class="container">
+                <h2>Incontra i Nostri Artisti</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">Dietro ogni capolavoro c'è una visione unica. Scopri le menti creative che danno vita alle nostre collezioni.</p>
+                <div class="artist-grid">
+                    <div class="artist-card">
+                        <img src="https://via.placeholder.com/200x200/60a5fa/FFFFFF?text=Artista+1" alt="Ritratto Artista 1">
+                        <h3>Elara Vance</h3>
+                        <p>Specializzata in arte astratta e cinetica, Elara esplora il movimento e il colore come forme di espressione pura.</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-4 inline-block text-sm font-semibold">Vedi Profilo <i data-lucide="arrow-right" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                    <div class="artist-card">
+                        <img src="https://via.placeholder.com/200x200/34d399/FFFFFF?text=Artista+2" alt="Ritratto Artista 2">
+                        <h3>Kairos Bellwether</h3>
+                        <p>Maestro del surrealismo digitale, Kairos crea paesaggi onirici che sfidano la percezione della realtà.</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-4 inline-block text-sm font-semibold">Vedi Profilo <i data-lucide="arrow-right" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                    <div class="artist-card">
+                        <img src="https://via.placeholder.com/200x200/f87171/FFFFFF?text=Artista+3" alt="Ritratto Artista 3">
+                        <h3>Lyra Shadowbrook</h3>
+                        <p>Conosciuta per i suoi ritratti intensi e carichi di emozione, Lyra cattura l'essenza dell'anima umana.</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-4 inline-block text-sm font-semibold">Vedi Profilo <i data-lucide="arrow-right" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                     <div class="artist-card">
+                        <img src="https://via.placeholder.com/200x200/a78bfa/FFFFFF?text=Artista+4" alt="Ritratto Artista 4">
+                        <h3>Zephyrion Sparks</h3>
+                        <p>Innovatore dell'arte generativa e interattiva, Zephyrion unisce codice e creatività in opere dinamiche.</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-4 inline-block text-sm font-semibold">Vedi Profilo <i data-lucide="arrow-right" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="eventi" class="events-section">
+            <div class="container">
+                <h2>Prossimi Eventi e Mostre</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">Non perdere l'occasione di partecipare alle nostre mostre e incontri esclusivi con gli artisti.</p>
+                <div class="event-card">
+                    <img src="https://via.placeholder.com/400x250/fbbf24/FFFFFF?text=Evento+1" alt="Immagine Evento 1">
+                    <div class="event-info">
+                        <h3>Vernissage: Luci e Ombre del Futuro</h3>
+                        <p>Una mostra che esplora il rapporto tra tecnologia e natura attraverso installazioni luminose interattive.</p>
+                        <p class="event-date"><i data-lucide="calendar" class="inline-block mr-2 w-5 h-5"></i> 15 Settembre 2025 | 18:00 - 21:00</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-3 inline-block font-semibold">Registrati Ora <i data-lucide="ticket" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <img src="https://via.placeholder.com/400x250/67e8f9/FFFFFF?text=Evento+2" alt="Immagine Evento 2">
+                    <div class="event-info">
+                        <h3>Workshop: Introduzione alla Scultura Digitale 3D</h3>
+                        <p>Un workshop pratico per esplorare le basi della scultura digitale e della modellazione 3D per l'arte.</p>
+                        <p class="event-date"><i data-lucide="calendar" class="inline-block mr-2 w-5 h-5"></i> 22 Ottobre 2025 | 10:00 - 17:00</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-3 inline-block font-semibold">Iscriviti <i data-lucide="pencil" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <img src="https://via.placeholder.com/400x250/c084fc/FFFFFF?text=Evento+3" alt="Immagine Evento 3">
+                    <div class="event-info">
+                        <h3>Talk: Il Ruolo dell'AI nell'Arte Contemporanea</h3>
+                        <p>Un dibattito con esperti sull'impatto e le opportunità dell'intelligenza artificiale nel panorama artistico.</p>
+                        <p class="event-date"><i data-lucide="calendar" class="inline-block mr-2 w-5 h-5"></i> 10 Novembre 2025 | 17:30 - 19:00</p>
+                        <a href="#" class="text-amber-500 hover:text-amber-400 mt-3 inline-block font-semibold">Prenota il Posto <i data-lucide="mic" class="inline-block ml-1 w-4 h-4"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="visita" class="py-20 bg-slate-950 text-center">
+            <div class="container">
+                <h2 class="text-4xl mb-12">Vieni a Trovarci</h2>
+                <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-8">Siamo lieti di accoglierti nella nostra galleria fisica, un luogo dove l'arte prende vita. Scopri il nostro spazio espositivo nel cuore della città.</p>
+                <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                    <div>
+                        <h3 class="text-2xl text-white mb-4"><i data-lucide="map-pin" class="inline-block mr-3 w-6 h-6 text-amber-500"></i>Indirizzo</h3>
+                        <p class="text-gray-300">Via dell'Arte, 10</p>
+                        <p class="text-gray-300">00100 Roma, Italia</p>
+                        <h3 class="text-2xl text-white mt-8 mb-4"><i data-lucide="clock" class="inline-block mr-3 w-6 h-6 text-amber-500"></i>Orari di Apertura</h3>
+                        <p class="text-gray-300">Martedì - Venerdì: 10:00 - 18:00</p>
+                        <p class="text-gray-300">Sabato: 11:00 - 19:00</p>
+                        <p class="text-gray-300">Domenica & Lunedì: Chiuso</p>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl text-white mb-4"><i data-lucide="phone" class="inline-block mr-3 w-6 h-6 text-amber-500"></i>Contatti</h3>
+                        <p class="text-gray-300">Telefono: +39 06 12345678</p>
+                        <p class="text-gray-300">Email: info@artinsight.it</p>
+                        <h3 class="text-2xl text-white mt-8 mb-4"><i data-lucide="car" class="inline-block mr-3 w-6 h-6 text-amber-500"></i>Come Arrivare</h3>
+                        <p class="text-gray-300">La galleria è facilmente raggiungibile con i mezzi pubblici (metro A, fermata "Arte"). Parcheggio disponibile nelle vicinanze.</p>
+                    </div>
+                </div>
+                <div class="mt-12 rounded-lg overflow-hidden shadow-xl" style="height: 450px; width: 100%;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15367.632115162473!2d12.4831835!3d41.9027835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDQ5JzQ0LjMiTiAxMsKwNTMnMzAuNiJF!5e0!3m2!1sit!2sit!4v1678912345678!5m2!1sit!2sit" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section id="contatti" class="contact-section">
+            <div class="container">
+                <h2>Parla con Noi</h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-12">Hai domande sulle opere, sugli artisti o sui nostri eventi? Compila il modulo qui sotto e ti risponderemo al più presto.</p>
+                <form class="contact-form">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name">Nome Completo</label>
+                            <input type="text" id="name" name="name" placeholder="Il tuo nome" required>
+                        </div>
+                        <div>
+                            <label for="email">Indirizzo Email</label>
+                            <input type="email" id="email" name="email" placeholder="la_tua_email@example.com" required>
+                        </div>
+                    </div>
+                    <label for="subject">Oggetto</label>
+                    <input type="text" id="subject" name="subject" placeholder="Oggetto del messaggio" required>
+
+                    <label for="message">Il tuo Messaggio</label>
+                    <textarea id="message" name="message" rows="6" placeholder="Scrivi qui il tuo messaggio..." required></textarea>
+
+                    <button type="submit">Invia Messaggio <i data-lucide="send" class="inline-block ml-2 w-5 h-5"></i></button>
+                </form>
+                <div class="contact-info">
+                    <p>Oppure chiamaci al: <span class="text-amber-500 font-semibold">+39 06 12345678</span></p>
+                    <p>O invia una mail a: <span class="text-amber-500 font-semibold">info@artinsight.it</span></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <nav class="footer-links">
+                <a href="#hero">Home</a>
+                <a href="#gallerie">Gallerie</a>
+                <a href="#artisti">Artisti</a>
+                <a href="#eventi">Eventi</a>
+                <a href="#visita">Visita</a>
+                <a href="#contatti">Contatti</a>
+            </nav>
+            <div class="social-icons">
+                <a href="https://facebook.com/artinsight" target="_blank" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                <a href="https://instagram.com/artinsight" target="_blank" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+                <a href="https://twitter.com/artinsight" target="_blank" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                <a href="https://linkedin.com/company/artinsight" target="_blank" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+            </div>
+            <p class="copyright">&copy; 2025 ArtInsight. Tutti i diritti riservati.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Inizializzazione animazioni GSAP (es. testo hero, scroll-triggered animations)
+        GSAP.from(".hero-section h1", { opacity: 0, y: 50, duration: 1.5, delay: 0.5, ease: "power3.out" });
+        GSAP.from(".hero-section p", { opacity: 0, y: 30, duration: 1.5, delay: 1, ease: "power3.out" });
+        GSAP.from(".btn-explore", { opacity: 0, scale: 0.8, duration: 1, delay: 1.5, ease: "back.out(1.7)" });
+
+        // Animazione della navbar al scroll
+        const header = document.querySelector('.main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(13, 13, 13, 0.95)';
+                header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.4)';
+            } else {
+                header.style.backgroundColor = 'rgba(13, 13, 13, 0.9)';
+                header.style.boxShadow = 'none';
+            }
+        });
+
+        // Logica per il Modale Dettaglio Opera
+        document.querySelectorAll('.artwork-card button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Qui potresti recuperare i dati dell'opera e popolare il modale
+                // Per ora, mostra solo il modale di esempio
+                document.getElementById('artwork-modal').classList.remove('hidden');
+            });
+        });
+
+        // --- Three.js setup for Hero Section (Basic Rotating Cube for example) ---
+        // Questo è un esempio molto basilare. Un vero carosello 3D richiederebbe molta più logica.
+        const heroCanvas = document.getElementById('hero-3d-canvas');
+        if (heroCanvas) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, heroCanvas.clientWidth / heroCanvas.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true }); // alpha true per sfondo trasparente
+            renderer.setSize(heroCanvas.clientWidth, heroCanvas.clientHeight);
+
+            // Luce
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0xffffff, 1);
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            // Cubo di esempio
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial({ color: 0xdeb887 }); // Colore bronzo/oro
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
+
+            camera.position.z = 5;
+
+            // Animazione
+            function animate() {
+                requestAnimationFrame(animate);
+                cube.rotation.x += 0.005;
+                cube.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Gestione ridimensionamento per Three.js
+            window.addEventListener('resize', () => {
+                camera.aspect = heroCanvas.clientWidth / heroCanvas.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(heroCanvas.clientWidth, heroCanvas.clientHeight);
+            });
+        }
+    </script>
+</body>
+</html>

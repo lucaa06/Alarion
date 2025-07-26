@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Platform - Anteprima</title>
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #e2e8f0; }
+        .stat-card { background-color: #0f172a; border: 1px solid #1e293b; transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        /* Imposta un'altezza fissa per il contenitore del grafico per evitare l'espansione infinita */
+        .chart-container { 
+            background-color: #0f172a; 
+            border: 1px solid #1e293b; 
+            height: 400px; /* Altezza fissa per i grafici */
+            display: flex; /* Usa flexbox per centrare la canvas se necessario */
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Necessario per posizionamento assoluto della canvas se si usasse */
+        }
+        /* Assicurati che la canvas si adatti al suo contenitore con l'altezza fissa */
+        .chart-container canvas {
+            max-height: 100%; /* La canvas non supererà l'altezza del contenitore */
+            width: 100% !important; /* Assicurati che la larghezza sia sempre 100% */
+            height: 100% !important; /* Assicurati che l'altezza sia sempre 100% del contenitore */
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="flex h-screen bg-slate-900">
+        <!-- Sidebar -->
+        <aside class="w-64 flex-shrink-0 bg-slate-950 p-6 flex flex-col shadow-lg">
+            <h1 class="text-2xl font-bold text-white mb-10">Insight<span class="text-sky-500">.</span></h1>
+            <nav class="flex-grow">
+                <a href="#" class="flex items-center px-4 py-3 bg-slate-800 text-white rounded-lg transition-colors duration-200 hover:bg-slate-700">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i> Dashboard
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 mt-4 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-colors duration-200">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i> Report
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 mt-4 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-colors duration-200">
+                    <i data-lucide="users" class="w-5 h-5 mr-3"></i> Utenti
+                </a>
+                 <a href="#" class="flex items-center px-4 py-3 mt-4 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-colors duration-200">
+                    <i data-lucide="settings" class="w-5 h-5 mr-3"></i> Impostazioni
+                </a>
+            </nav>
+            <div class="flex-shrink-0">
+                 <a href="index.html" class="text-sm text-slate-500 hover:text-sky-400 transition-colors duration-200">&larr; Torna a Alarion</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+            <h2 class="text-3xl font-bold text-white mb-8">Dashboard Principale</h2>
+            
+            <!-- Statistiche Veloci -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card p-6 rounded-lg">
+                    <h3 class="text-sm font-medium text-slate-400">Utenti Attivi</h3>
+                    <p class="text-3xl font-bold text-white mt-2">1,254</p>
+                </div>
+                 <div class="stat-card p-6 rounded-lg">
+                    <h3 class="text-sm font-medium text-slate-400">Nuove Registrazioni</h3>
+                    <p class="text-3xl font-bold text-white mt-2">72</p>
+                </div>
+                 <div class="stat-card p-6 rounded-lg">
+                    <h3 class="text-sm font-medium text-slate-400">Entrate Mensili</h3>
+                    <p class="text-3xl font-bold text-white mt-2">€ 8,430</p>
+                </div>
+                 <div class="stat-card p-6 rounded-lg">
+                    <h3 class="text-sm font-medium text-slate-400">Tasso di Rimbalzo</h3>
+                    <p class="text-3xl font-bold text-white mt-2">23.4%</p>
+                </div>
+            </div>
+
+            <!-- Grafico Principale - Traffico -->
+            <div class="chart-container rounded-lg p-6 mb-8">
+                 <h3 class="text-lg font-semibold text-white mb-4">Panoramica Traffico</h3>
+                 <canvas id="trafficChart"></canvas>
+            </div>
+
+            <!-- Grafico Secondario - Registrazioni -->
+            <div class="chart-container rounded-lg p-6 mb-8">
+                 <h3 class="text-lg font-semibold text-white mb-4">Registrazioni Settimanali</h3>
+                 <canvas id="registrationsChart"></canvas>
+            </div>
+
+            <!-- Tabella Attività Recenti -->
+            <div class="chart-container rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Utenti Recenti</h3>
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-sm text-slate-400 border-b border-slate-700">
+                            <th class="py-3 px-2">Nome</th>
+                            <th class="py-3 px-2">Email</th>
+                            <th class="py-3 px-2">Ruolo</th>
+                            <th class="py-3 px-2">Data Registrazione</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white">
+                        <tr class="border-b border-slate-800">
+                            <td class="py-4 px-2">Mario Rossi</td>
+                            <td class="py-4 px-2">mario.rossi@example.com</td>
+                            <td class="py-4 px-2">Admin</td>
+                            <td class="py-4 px-2">25/07/2024</td>
+                        </tr>
+                        <tr class="border-b border-slate-800">
+                            <td class="py-4 px-2">Giulia Bianchi</td>
+                            <td class="py-4 px-2">giulia.bianchi@example.com</td>
+                            <td class="py-4 px-2">User</td>
+                            <td class="py-4 px-2">24/07/2024</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-2">Luca Verdi</td>
+                            <td class="py-4 px-2">luca.verdi@example.com</td>
+                            <td class="py-4 px-2">User</td>
+                            <td class="py-4 px-2">23/07/2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+    <script>
+        lucide.createIcons();
+
+        // Variabili per memorizzare le istanze dei grafici
+        let trafficChartInstance = null;
+        let registrationsChartInstance = null;
+
+        // Dati per i grafici
+        const trafficData = {
+            labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug'],
+            datasets: [{
+                label: 'Visite Uniche',
+                data: [65, 59, 80, 81, 56, 55, 40],
+                fill: true,
+                borderColor: 'rgb(59, 130, 246)', // Tailwind blue-500
+                backgroundColor: 'rgba(59, 130, 246, 0.2)', // Light blue fill
+                tension: 0.3, // Smooth lines
+                pointBackgroundColor: 'rgb(59, 130, 246)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(59, 130, 246)'
+            }]
+        };
+
+        const registrationsData = {
+            labels: ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
+            datasets: [{
+                label: 'Nuove Registrazioni',
+                data: [12, 19, 3, 5, 2, 3, 7],
+                backgroundColor: [
+                    'rgba(251, 191, 36, 0.6)', // Tailwind amber-400
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(251, 191, 36, 0.6)',
+                    'rgba(251, 191, 36, 0.6)'
+                ],
+                borderColor: [
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)',
+                    'rgba(251, 191, 36, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        // Opzioni dei grafici: disabilita tutte le animazioni
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false, // Importante: lascia Chart.js gestire l'aspetto all'interno del contenitore
+            animation: false, // Disabilita tutte le animazioni iniziali
+            hover: {
+                animationDuration: 0 // Disabilita animazioni al passaggio del mouse
+            },
+            responsiveAnimationDuration: 0, // Disabilita animazioni al ridimensionamento
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#e2e8f0' // Testo chiaro per la legenda
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#94a3b8' // Slate-400 per le etichette dell'asse x
+                    },
+                    grid: {
+                        color: '#1e293b' // Linee griglia scure
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#94a3b8' // Slate-400 per le etichette dell'asse y
+                    },
+                    grid: {
+                        color: '#1e293b' // Linee griglia scure
+                    }
+                }
+            }
+        };
+
+        // Funzione per inizializzare i grafici in modo sicuro
+        function initializeCharts() {
+            // Se l'istanza del grafico traffico non esiste, la crea
+            if (trafficChartInstance === null) {
+                const trafficCtx = document.getElementById('trafficChart');
+                if (trafficCtx) { // Controlla se l'elemento canvas esiste
+                    trafficChartInstance = new Chart(trafficCtx.getContext('2d'), {
+                        type: 'line',
+                        data: trafficData,
+                        options: chartOptions
+                    });
+                }
+            }
+
+            // Se l'istanza del grafico registrazioni non esiste, la crea
+            if (registrationsChartInstance === null) {
+                const registrationsCtx = document.getElementById('registrationsChart');
+                if (registrationsCtx) { // Controlla se l'elemento canvas esiste
+                    registrationsChartInstance = new Chart(registrationsCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: registrationsData,
+                        options: chartOptions
+                    });
+                }
+            }
+        }
+
+        // Avvia l'inizializzazione dei grafici solo quando il DOM è completamente caricato
+        document.addEventListener('DOMContentLoaded', initializeCharts);
+
+        // Il listener di ridimensionamento della finestra è gestito internamente da Chart.js
+        // quando `responsive: true` è impostato nelle opzioni. Non causa rendering continui.
+        window.addEventListener('resize', () => {
+            // Non sono necessarie chiamate esplicite per aggiornare i grafici qui,
+            // Chart.js si occupa del ridimensionamento in modo efficiente.
+            // Se i grafici sono già stati inizializzati, Chart.js li ridisegnerà
+            // all'interno dei loro contenitori con altezza fissa.
+        });
+
+    </script>
+</body>
+</html>

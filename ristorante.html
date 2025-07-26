@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ristorante La Lanterna - Anteprima</title>
+        <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Roboto', sans-serif; background-color: #fdfaf6; color: #3a3a3a; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .hero {
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://placehold.co/1920x1080/4d362a/ffffff?text=La+Lanterna');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Parallax effect */
+        }
+        .menu-item {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            padding: 1rem; /* Tailwind p-4 */
+        }
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            transition: transform 0.3s ease-in-out;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        /* Message Box styles */
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50; /* Green for success */
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            text-align: center;
+            animation: fadeInScale 0.3s ease-out;
+        }
+        .message-box.error {
+            background-color: #f44336; /* Red for error */
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg fixed top-0 left-0 right-0 z-10 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-amber-900">La Lanterna</h1>
+            <nav class="hidden md:flex space-x-8 items-center text-amber-900">
+                <a href="#menu" class="hover:text-amber-700 transition-colors">Menu</a>
+                <a href="#galleria" class="hover:text-amber-700 transition-colors">Galleria</a>
+                <a href="#prenota" class="bg-amber-800 hover:bg-amber-900 text-white font-medium py-2 px-4 rounded-full transition-colors">Prenota un Tavolo</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero h-screen flex items-center justify-center text-center text-white">
+        <div class="container mx-auto px-6">
+            <h1 class="text-5xl md:text-7xl font-bold leading-tight">L'Arte della Cucina Tradizionale</h1>
+            <p class="text-xl mt-4 max-w-2xl mx-auto">Dove ogni piatto racconta una storia di passione e sapore.</p>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-4xl font-bold text-center text-amber-900 mb-12">Il Nostro Menu</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 max-w-4xl mx-auto">
+                <div>
+                    <h3 class="text-2xl font-bold text-amber-800 mb-4">Antipasti</h3>
+                    <div class="space-y-3">
+                        <div class="menu-item">
+                            <p class="font-semibold">Tagliere di salumi e formaggi locali <span class="float-right font-bold">€15</span></p>
+                            <p class="text-sm text-gray-600">Selezione dei migliori prodotti della regione.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Bruschette miste della casa <span class="float-right font-bold">€8</span></p>
+                            <p class="text-sm text-gray-600">Pomodoro fresco, basilico e olio d'oliva.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Insalata di mare tiepida <span class="float-right font-bold">€12</span></p>
+                            <p class="text-sm text-gray-600">Frutti di mare freschi con patate e fagiolini.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold text-amber-800 mb-4">Primi Piatti</h3>
+                    <div class="space-y-3">
+                        <div class="menu-item">
+                            <p class="font-semibold">Ravioli al ragù di cinghiale <span class="float-right font-bold">€14</span></p>
+                            <p class="text-sm text-gray-600">Pasta fresca fatta in casa con ragù tradizionale.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Tagliatelle ai funghi porcini <span class="float-right font-bold">€13</span></p>
+                            <p class="text-sm text-gray-600">Funghi freschi di stagione saltati in padella.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Risotto alla pescatora <span class="float-right font-bold">€16</span></p>
+                            <p class="text-sm text-gray-600">Riso Carnaroli con un mix di frutti di mare.</p>
+                        </div>
+                    </div>
+                </div>
+                 <div>
+                    <h3 class="text-2xl font-bold text-amber-800 mb-4">Secondi Piatti</h3>
+                    <div class="space-y-3">
+                        <div class="menu-item">
+                            <p class="font-semibold">Filetto di manzo al pepe verde <span class="float-right font-bold">€22</span></p>
+                            <p class="text-sm text-gray-600">Tenero filetto cotto alla perfezione con salsa cremosa.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Grigliata mista di pesce <span class="float-right font-bold">€25</span></p>
+                            <p class="text-sm text-gray-600">Selezione di pesce fresco alla griglia.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Costolette d'agnello scottadito <span class="float-right font-bold">€20</span></p>
+                            <p class="text-sm text-gray-600">Costolette tenere e saporite, ideali per gli amanti della carne.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-amber-800 mb-4">Dolci</h3>
+                    <div class="space-y-3">
+                        <div class="menu-item">
+                            <p class="font-semibold">Tiramisù della casa <span class="float-right font-bold">€6</span></p>
+                            <p class="text-sm text-gray-600">Ricetta classica con mascarpone e caffè.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Panna cotta ai frutti di bosco <span class="float-right font-bold">€6</span></p>
+                            <p class="text-sm text-gray-600">Dolce al cucchiaio fresco e leggero.</p>
+                        </div>
+                        <div class="menu-item">
+                            <p class="font-semibold">Tortino al cioccolato con cuore caldo <span class="float-right font-bold">€7</span></p>
+                            <p class="text-sm text-gray-600">Un classico intramontabile per i golosi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galleria Section -->
+    <section id="galleria" class="py-24 bg-amber-50">
+         <div class="container mx-auto px-6">
+             <h2 class="text-4xl font-bold text-center text-amber-900 mb-12">I Nostri Piatti</h2>
+             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 <div class="gallery-item">
+                    <img src="https://placehold.co/400x400/a16207/ffffff?text=Piatto+1" alt="Piatto gourmet 1" class="w-full h-full object-cover aspect-square">
+                 </div>
+                 <div class="gallery-item">
+                    <img src="https://placehold.co/400x400/ca8a04/ffffff?text=Piatto+2" alt="Piatto gourmet 2" class="w-full h-full object-cover aspect-square">
+                 </div>
+                 <div class="gallery-item">
+                    <img src="https://placehold.co/400x400/eab308/ffffff?text=Piatto+3" alt="Piatto gourmet 3" class="w-full h-full object-cover aspect-square">
+                 </div>
+                 <div class="gallery-item">
+                    <img src="https://placehold.co/400x400/f59e0b/ffffff?text=Piatto+4" alt="Piatto gourmet 4" class="w-full h-full object-cover aspect-square">
+                 </div>
+             </div>
+         </div>
+    </section>
+    
+    <!-- Prenotazione Section -->
+    <section id="prenota" class="py-24">
+        <div class="container mx-auto px-6 max-w-lg">
+            <h2 class="text-4xl font-bold text-center text-amber-900 mb-12">Prenota il tuo Tavolo</h2>
+            <form id="booking-form" class="space-y-6">
+                <input type="text" placeholder="Nome" id="booking-name" class="w-full border border-amber-200 rounded-full px-6 py-3 focus:ring-2 focus:ring-amber-500 outline-none" required>
+                <input type="email" placeholder="Email" id="booking-email" class="w-full border border-amber-200 rounded-full px-6 py-3 focus:ring-2 focus:ring-amber-500 outline-none" required>
+                <input type="date" id="booking-date" class="w-full border border-amber-200 rounded-full px-6 py-3 focus:ring-2 focus:ring-amber-500 outline-none" required>
+                <input type="time" id="booking-time" class="w-full border border-amber-200 rounded-full px-6 py-3 focus:ring-2 focus:ring-amber-500 outline-none" required>
+                <select id="booking-guests" class="w-full border border-amber-200 rounded-full px-6 py-3 focus:ring-2 focus:ring-amber-500 outline-none" required>
+                    <option value="">Seleziona numero persone</option>
+                    <option value="1">1 persona</option>
+                    <option value="2">2 persone</option>
+                    <option value="3">3 persone</option>
+                    <option value="4">4 persone</option>
+                    <option value="5">5 persone</option>
+                    <option value="6">6+ persone</option>
+                </select>
+                <button type="submit" class="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors">Conferma Prenotazione</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Message Box -->
+    <div id="message-box" class="message-box">
+        <p id="message-text"></p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-amber-950 text-amber-200 py-12 text-center">
+         <div class="container mx-auto px-6">
+            <a href="index.html" class="text-sm hover:text-white">&larr; Sito realizzato da Alarion</a>
+            <p class="mt-4">Via Roma 123, 16100 Genova (GE) | info@lalanterna.com | +39 010 1234567</p>
+         </div>
+    </footer>
+
+    <script>
+        // Function to show a custom message box
+        function showMessageBox(message, type = 'success') {
+            const msgBox = document.getElementById('message-box');
+            const msgText = document.getElementById('message-text');
+            
+            msgText.textContent = message;
+            msgBox.classList.remove('success', 'error'); // Reset classes
+            msgBox.classList.add(type);
+            msgBox.style.display = 'block';
+
+            setTimeout(() => {
+                msgBox.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Handle booking form submission
+        document.getElementById('booking-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('booking-name').value;
+            const email = document.getElementById('booking-email').value;
+            const date = document.getElementById('booking-date').value;
+            const time = document.getElementById('booking-time').value;
+            const guests = document.getElementById('booking-guests').value;
+
+            if (name && email && date && time && guests) {
+                // In a real application, you would send this data to a server
+                // For this example, we'll just show a success message
+                showMessageBox('Prenotazione confermata per ' + name + ' il ' + date + ' alle ' + time + ' per ' + guests + ' persone. Ti abbiamo inviato una conferma via email!', 'success');
+                this.reset(); // Clear the form
+            } else {
+                showMessageBox('Per favore, compila tutti i campi.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
